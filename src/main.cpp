@@ -1,12 +1,18 @@
-#include <Wire.h>
+#include <Arduino.h>
+#include <SPI.h>
 #include <Adafruit_SSD1306.h>
 
+
+#define OLED_DC     D0
+#define OLED_CS     D8
+#define OLED_RESET  -1
+
 //-----------------------------------------------
-Adafruit_SSD1306 display(128, 64, &Wire, D4);
+Adafruit_SSD1306 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS);
 
 //-----------------------------------------------
 #define CLK    D6
-#define DT     D7
+#define DT     D3
 #define SW     D4
 
 //-----------------------------------------------
@@ -37,30 +43,13 @@ const unsigned long displayOffTimeLimit = 30 * 60000;  // 30 minutes in millisec
 unsigned long idleStartTime = 0;  // Track when IDLE mode starts
 bool displayOff = false;  // Track if the display is off
 
-//=========================================================
-void setup() {  
-  initHardware();
-  initDisplay();
-  updateDisplay();
-  Serial.println("Setup complete, starting loop...");
-}
-
-//=========================================================
-void loop() {
-  unsigned long currentMillis = millis();
-  
-  // Handle rotary encoder input
-  handleRotaryInput();
-
-  // Handle button presses and states
-  handleButtonPresses(currentMillis);
-
-  // Handle counting logic
-  handleCounting(currentMillis);
-
-  // Handle inactivity
-  handleInactivity(currentMillis);
-}
+void startCountingUp();
+void stopCountingUp();
+void stopCountingDown();
+void startSelectingDownDuration();
+void resetFlowMinutes();
+void confirmCountdownSelection();
+void successAnimation();
 
 //=========================================================
 // Initialize hardware pins and serial communication
@@ -390,3 +379,29 @@ void handleInactivity(unsigned long currentMillis) {
   }
 }
 
+
+
+//=========================================================
+void setup() {  
+  initHardware();
+  initDisplay();
+  updateDisplay();
+  Serial.println("Setup complete, starting loop...");
+}
+
+//=========================================================
+void loop() {
+  unsigned long currentMillis = millis();
+  
+  // Handle rotary encoder input
+  handleRotaryInput();
+
+  // Handle button presses and states
+  handleButtonPresses(currentMillis);
+
+  // Handle counting logic
+  handleCounting(currentMillis);
+
+  // Handle inactivity
+  handleInactivity(currentMillis);
+}
